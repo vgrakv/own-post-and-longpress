@@ -407,6 +407,16 @@ async function giveOwnerReactionReputation(reactionReputation, pid) {
 	}
 }
 
+// When a user takes back a reaction, the notification that was sent to the author is deleted too.
+// Failing to delete it must never make removing the reaction itself fail.
+async function rescindReactionNotification(nid) {
+	try {
+		await notifications.rescind(nid);
+	} catch (e) {
+		console.error(e);
+	}
+}
+
 async function getReactionSetKey(socket, data) {
 	if (!socket.uid) {
 		throw new Error('[[error:not-logged-in]]');
@@ -551,6 +561,7 @@ SocketPlugins.reactions = {
 
 		if (hasReacted) {
 			await db.setRemove(`pid:${data.pid}:reaction:${data.reaction}`, socket.uid);
+			await rescindReactionNotification(`uid:${socket.uid}:pid:${data.pid}:reaction:${data.reaction}`);
 		}
 
 		const reactionCount = await db.setCount(`pid:${data.pid}:reaction:${data.reaction}`);
@@ -670,6 +681,7 @@ SocketPlugins.reactions = {
 		data.roomId = roomId;
 		if (hasReacted) {
 			await db.setRemove(`mid:${data.mid}:reaction:${data.reaction}`, socket.uid);
+			await rescindReactionNotification(`uid:${socket.uid}:mid:${data.mid}:reaction:${data.reaction}`);
 		}
 
 		const reactionCount = await db.setCount(`mid:${data.mid}:reaction:${data.reaction}`);
