@@ -1,0 +1,186 @@
+.reactions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem;
+	.reaction {
+		border: 1px solid var(--bs-primary-bg-subtle);
+		display: inline-block;
+		border-radius: 4px;
+		padding: 2px 4px;
+		margin: 0 1px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		.emoji {
+			height: 18px!important;
+		}
+		&.reacted {
+			border: 1px solid var(--bs-primary);
+		}
+		&:hover {
+			background-color: var(--bs-primary-bg-subtle);
+		}
+		.reaction-emoji-count {
+			margin-left: 5px;
+			&:before {
+				content: attr(data-count);
+			}
+		}
+	}
+	.reaction-add {
+		&.max-reactions,
+		&.own-post {
+			display: none !important;
+		}
+	}
+}
+
+// Touch devices (no hover): the emoji image must not be the long-press target,
+// otherwise the browser opens its "image options" menu instead of our users popup.
+@media (pointer: coarse) {
+	.reactions .reaction {
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		user-select: none;
+		-webkit-tap-highlight-color: transparent;
+
+		img,
+		.emoji {
+			pointer-events: none;
+			-webkit-user-drag: none;
+		}
+	}
+}
+
+// Popup listing who reacted (long-press on touch devices). Looks like the desktop tooltip.
+.reactions-users-popup {
+	position: absolute;
+	z-index: 2100;
+	display: block;
+	max-width: min(240px, calc(100vw - 16px));
+	font-size: 0.875rem;
+	text-align: center;
+	word-wrap: break-word;
+	opacity: 0.95;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	user-select: none;
+
+	.reactions-users-popup-inner {
+		padding: 0.25rem 0.5rem;
+		color: var(--bs-tooltip-color, #fff);
+		background-color: var(--bs-tooltip-bg, #000);
+		border-radius: var(--bs-tooltip-border-radius, 0.375rem);
+	}
+
+	.reactions-users-popup-arrow {
+		position: absolute;
+		bottom: -0.4rem;
+		width: 0;
+		height: 0;
+		transform: translateX(-50%);
+		border-style: solid;
+		border-width: 0.4rem 0.4rem 0;
+		border-color: var(--bs-tooltip-bg, #000) transparent transparent;
+	}
+
+	.reactions-users-popup-all {
+		display: block;
+		margin-top: 0.25rem;
+		color: inherit;
+		text-decoration: underline;
+	}
+
+	&.below .reactions-users-popup-arrow {
+		bottom: auto;
+		top: -0.4rem;
+		border-width: 0 0.4rem 0.4rem;
+		border-color: transparent transparent var(--bs-tooltip-bg, #000);
+	}
+}
+
+.reactions-allowed-picker {
+	position: absolute;
+	z-index: 2000;
+	background: var(--bs-body-bg, #fff);
+	border: 1px solid var(--bs-border-color, rgba(0, 0, 0, 0.15));
+	border-radius: 8px;
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+	padding: 6px;
+	max-width: 280px;
+
+	.reactions-allowed-grid {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 2px;
+	}
+
+	.reactions-allowed-item {
+		background: transparent;
+		border: 1px solid transparent;
+		border-radius: 6px;
+		padding: 4px 6px;
+		cursor: pointer;
+		line-height: 1;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		transition: background-color 0.1s ease, border-color 0.1s ease, transform 0.1s ease;
+
+		.emoji {
+			height: 22px !important;
+			width: auto !important;
+		}
+
+		&:hover {
+			background-color: var(--bs-primary-bg-subtle, rgba(13, 110, 253, 0.1));
+			border-color: var(--bs-primary-border-subtle, rgba(13, 110, 253, 0.25));
+			transform: scale(1.1);
+		}
+
+		&:focus {
+			outline: none;
+			border-color: var(--bs-primary, #0d6efd);
+		}
+	}
+}
+
+#emoji-dialog .reactions-multi-done {
+	position: sticky;
+	bottom: 0;
+	background: var(--bs-body-bg, #fff);
+	padding: 6px;
+	border-top: 1px solid var(--bs-border-color, #ddd);
+	text-align: end;
+}
+
+#emoji-dialog .emoji-link.reactions-picked {
+	background-color: var(--bs-primary-bg-subtle, rgba(13, 110, 253, 0.15));
+	border: 2px solid var(--bs-primary, #0d6efd);
+	border-radius: 6px;
+	box-sizing: border-box;
+	position: relative;
+
+	&::after {
+		content: "✓";
+		position: absolute;
+		top: -2px;
+		right: -2px;
+		background: var(--bs-primary, #0d6efd);
+		color: #fff;
+		font-size: 10px;
+		line-height: 1;
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: bold;
+	}
+}
+
+.reactions-users-list {
+	max-height: 60vh;
+	overflow-y: auto;
+}
