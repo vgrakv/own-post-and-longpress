@@ -91,6 +91,7 @@ async function loadPluginConfig() {
 	// absent = on (previous behaviour); only an explicit 'off' disables them
 	settings.deleteNotificationOnRemove = settings.deleteNotificationOnRemove !== 'off';
 	settings.deleteNotificationOnRemoveReputation = settings.deleteNotificationOnRemoveReputation !== 'off';
+	settings.deleteNotificationOnUnvote = settings.deleteNotificationOnUnvote !== 'off';
 	settings.allowedPostReactions = Array.isArray(settings['allowed-post-reactions']) ?
 		settings['allowed-post-reactions'].map(r => r && r.reaction).filter(Boolean) : [];
 	return settings;
@@ -107,6 +108,9 @@ ReactionsPlugin.filterSettingsGet = async function (hookData) {
 		}
 		if (!values.hasOwnProperty('deleteNotificationOnRemove')) {
 			values.deleteNotificationOnRemove = 'on';
+		}
+		if (!values.hasOwnProperty('deleteNotificationOnUnvote')) {
+			values.deleteNotificationOnUnvote = 'on';
 		}
 		if (!values.hasOwnProperty('deleteNotificationOnRemoveReputation')) {
 			values.deleteNotificationOnRemoveReputation = 'on';
@@ -172,6 +176,24 @@ ReactionsPlugin.mergeReactionNotifications = async function (data) {
 		data.notifications = data.notifications.filter(n => !removed.has(n));
 	}
 	return data;
+};
+
+// The forum's built-in upvote ("like", not our emoji reactions): when the voter takes the upvote back
+// (or switches it to a downvote), NodeBB core fires action:post.unvote but keeps the notification.
+// Core's notification id for it is `upvote:post:<pid>:uid:<voter>`.
+ReactionsPlugin.onUnvote = async function (data) {
+	try {
+		if (!data || data.current !== 'upvote' || !data.pid || !data.uid) {
+			return;
+		}
+		const settings = await loadPluginConfig();
+		if (!settings.deleteNotificationOnUnvote) {
+			return;
+		}
+		await notifications.rescind(`upvote:post:${data.pid}:uid:${data.uid}`);
+	} catch (e) {
+		console.error(e);
+	}
 };
 
 // Notification texts are stored with ":name:" shortcodes. After NodeBB translated them, swap the shortcodes

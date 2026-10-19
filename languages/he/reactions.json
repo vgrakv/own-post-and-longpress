@@ -41,6 +41,8 @@
 	"settings.delete-notification-on-remove-help": "כשמשתמש מסיר את תגובת האמוג'י שלו, ההתראה שנשלחה לבעל הפוסט נמחקת. כבה כדי להשאיר את ההתראה גם אחרי שהתגובה הוסרה. חל על פוסטים ועל הודעות צ'אט.",
 	"settings.delete-notification-on-remove-reputation": "מחק את ההתראה כשתגובת מוניטין (\"לייק\") הוסרה",
 	"settings.delete-notification-on-remove-reputation-help": "חל על תגובות שהוגדר להן מוניטין למעלה. כשתגובה כזו מוסרת, המוניטין מוחזר, והאפשרות הזו קובעת אם גם ההתראה לבעל הפוסט תימחק. כבה כדי להשאיר התראות אלה.",
+	"settings.delete-notification-on-unvote": "מחק את ההתראה כשהלייק המובנה של הפורום (הצבעה בעד) הוסר",
+	"settings.delete-notification-on-unvote-help": "הכוונה לכפתור הלייק של NodeBB עצמו, לא לאמוג'י של התוסף. כשמשתמש מבטל את הלייק שלו, ההתראה שבעל הפוסט קיבל עליו נמחקת. כבה כדי להשאיר אותה.",
 	"notification.user-has-reacted-with-to-your-post-in-topic": "<strong>%1</strong> הגיב עם %2 לפוסט שלך ב<strong>%3</strong>",
 	"notification.user-has-reacted-with-to-your-message-in-room": "<strong>%1</strong> הגיב עם %2 להודעה שלך ב<strong class=\"text-nowrap \"><i class=\"fa %3\"></i>%4</strong>",
 	"notification.user-has-reacted-to-your-post-in-topic": "<strong>%1</strong> הגיב עם %2 לפוסט שלך ב<strong>%3</strong>",
