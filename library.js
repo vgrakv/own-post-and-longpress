@@ -90,7 +90,6 @@ async function loadPluginConfig() {
 	settings.allowSelfReactions = settings.allowSelfReactions === 'on';
 	// absent = on (previous behaviour); only an explicit 'off' disables them
 	settings.deleteNotificationOnRemove = settings.deleteNotificationOnRemove !== 'off';
-	settings.deleteNotificationOnRemoveReputation = settings.deleteNotificationOnRemoveReputation !== 'off';
 	settings.deleteNotificationOnUnvote = settings.deleteNotificationOnUnvote !== 'off';
 	settings.allowedPostReactions = Array.isArray(settings['allowed-post-reactions']) ?
 		settings['allowed-post-reactions'].map(r => r && r.reaction).filter(Boolean) : [];
@@ -111,9 +110,6 @@ ReactionsPlugin.filterSettingsGet = async function (hookData) {
 		}
 		if (!values.hasOwnProperty('deleteNotificationOnUnvote')) {
 			values.deleteNotificationOnUnvote = 'on';
-		}
-		if (!values.hasOwnProperty('deleteNotificationOnRemoveReputation')) {
-			values.deleteNotificationOnRemoveReputation = 'on';
 		}
 	}
 	return hookData;
@@ -461,7 +457,6 @@ async function giveOwnerReactionReputation(reactionReputation, pid) {
 
 // When a user takes back a reaction, the notification that was sent to the author is deleted too.
 // Failing to delete it must never make removing the reaction itself fail.
-// A reaction that gives reputation (a "like") follows its own setting, every other reaction the general one.
 async function rescindReactionNotification(nid, enabled = true) {
 	if (!enabled) {
 		return;
@@ -619,7 +614,7 @@ SocketPlugins.reactions = {
 			await db.setRemove(`pid:${data.pid}:reaction:${data.reaction}`, socket.uid);
 			await rescindReactionNotification(
 				`uid:${socket.uid}:pid:${data.pid}:reaction:${data.reaction}`,
-				reactionReputation > 0 ? settings.deleteNotificationOnRemoveReputation : settings.deleteNotificationOnRemove
+				settings.deleteNotificationOnRemove
 			);
 		}
 

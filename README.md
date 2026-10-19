@@ -21,7 +21,7 @@ Install via one-click activation in the Admin Control Panel or run the following
 - Several users reacting with the same emoji to the same post or chat message are merged into a single notification. Different emojis on the same post keep separate notifications.
 - Built-in forum upvote ("like"): when it is removed, the author's notification is deleted too (ACP, block "Notifications": "Delete the notification when the forum's built-in upvote is removed"; on by default).
 - Reaction notifications show the emoji as an image (not the `:name:` text).
-- When a user removes their reaction, the notification that was sent to the author for it is deleted. Two ACP switches control this (both on by default): "Delete the notification when the reaction is removed" (block "Notifications", applies to posts and chats) and "Delete the notification when a reputation reaction ("like") is removed" (inside "Reaction Reputations"; applies to reactions that have a reputation assigned).
+- When a user removes their reaction, the notification that was sent to the author for it is deleted. Controlled by the ACP switch "Delete the notification when the reaction is removed" (block "Notifications", applies to posts and chats; on by default).
 
 # Emojis in Topic Titles and Notifications
 

@@ -39,8 +39,6 @@
 	"settings.notifications-title": "Notifications",
 	"settings.delete-notification-on-remove": "Delete the notification when the reaction is removed",
 	"settings.delete-notification-on-remove-help": "When a user takes back an emoji reaction, the notification that was sent to the author is deleted. Turn this off to keep the notification even after the reaction was removed. Applies to posts and chat messages.",
-	"settings.delete-notification-on-remove-reputation": "Delete the notification when a reputation reaction (\"like\") is removed",
-	"settings.delete-notification-on-remove-reputation-help": "Applies to reactions that have a reputation assigned above. When such a reaction is removed, the reputation is taken back, and this option decides whether the author's notification is deleted too. Turn it off to keep these notifications.",
 	"settings.delete-notification-on-unvote": "Delete the notification when the forum's built-in upvote (\"like\") is removed",
 	"settings.delete-notification-on-unvote-help": "This is about NodeBB's own upvote button, not the emoji reactions of this plugin. When a user takes back their upvote, the notification the author received for it is deleted. Turn this off to keep it.",
 	"notification.user-has-reacted-with-to-your-post-in-topic": "<strong>%1</strong> has reacted with %2 to your post in <strong>%3</strong>",
