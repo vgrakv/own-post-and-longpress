@@ -49,6 +49,17 @@
 				</div>
 
 				<div class="mb-3">
+					<h5 class="fw-bold tracking-tight settings-header">{{tx("reactions:settings.notifications-title")}}</h5>
+					<div class="form-check form-switch mb-3">
+						<input id="deleteNotificationOnRemove" name="deleteNotificationOnRemove" type="checkbox" class="form-check-input">
+						<label for="deleteNotificationOnRemove" class="form-check-label">{{tx("reactions:settings.delete-notification-on-remove")}}</label>
+						<p class="form-text">
+							{{tx("reactions:settings.delete-notification-on-remove-help")}}
+						</p>
+					</div>
+				</div>
+
+				<div class="mb-3">
 					<h5 class="fw-bold tracking-tight settings-header">{{tx("reactions:settings.allowed-post-reactions")}}</h5>
 					<p class="form-text">
 						{{tx("reactions:settings.allowed-post-reactions-help")}}
@@ -65,6 +76,13 @@
 					<p class="form-text">
 						{{tx("reactions:settings.reaction-reputations-help")}}
 					</p>
+					<div class="form-check form-switch mb-3">
+						<input id="deleteNotificationOnRemoveReputation" name="deleteNotificationOnRemoveReputation" type="checkbox" class="form-check-input">
+						<label for="deleteNotificationOnRemoveReputation" class="form-check-label">{{tx("reactions:settings.delete-notification-on-remove-reputation")}}</label>
+						<p class="form-text">
+							{{tx("reactions:settings.delete-notification-on-remove-reputation-help")}}
+						</p>
+					</div>
 					<div class="form-group" data-type="sorted-list" data-sorted-list="reaction-reputations" data-item-template="admin/plugins/reactions/partials/sorted-list/emoji-item" data-form-template="admin/plugins/reactions/partials/sorted-list/emoji-form">
 						<ul data-type="list" class="list-group"></ul>
 						<button type="button" data-type="add" class="btn btn-info mt-2">{{tx("reactions:settings.reaction-reputations.add")}}</button>

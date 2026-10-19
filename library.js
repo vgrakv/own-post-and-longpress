@@ -88,6 +88,9 @@ async function loadPluginConfig() {
 	settings.enablePostReactions = settings.enablePostReactions === 'on';
 	settings.enableMessageReactions = settings.enableMessageReactions === 'on';
 	settings.allowSelfReactions = settings.allowSelfReactions === 'on';
+	// absent = on (previous behaviour); only an explicit 'off' disables them
+	settings.deleteNotificationOnRemove = settings.deleteNotificationOnRemove !== 'off';
+	settings.deleteNotificationOnRemoveReputation = settings.deleteNotificationOnRemoveReputation !== 'off';
 	settings.allowedPostReactions = Array.isArray(settings['allowed-post-reactions']) ?
 		settings['allowed-post-reactions'].map(r => r && r.reaction).filter(Boolean) : [];
 	return settings;
@@ -101,6 +104,12 @@ ReactionsPlugin.filterSettingsGet = async function (hookData) {
 		}
 		if (!values.hasOwnProperty('enableMessageReactions')) {
 			values.enableMessageReactions = 'on';
+		}
+		if (!values.hasOwnProperty('deleteNotificationOnRemove')) {
+			values.deleteNotificationOnRemove = 'on';
+		}
+		if (!values.hasOwnProperty('deleteNotificationOnRemoveReputation')) {
+			values.deleteNotificationOnRemoveReputation = 'on';
 		}
 	}
 	return hookData;
@@ -162,6 +171,27 @@ ReactionsPlugin.mergeReactionNotifications = async function (data) {
 	if (removed.size) {
 		data.notifications = data.notifications.filter(n => !removed.has(n));
 	}
+	return data;
+};
+
+// Notification texts are stored with ":name:" shortcodes. After NodeBB translated them, swap the shortcodes
+// for the real emoji image (the HTML cannot travel through translator arguments, they are escaped).
+ReactionsPlugin.renderNotificationEmojis = async function (data) {
+	if (!data || !Array.isArray(data.notifications)) {
+		return data;
+	}
+	data.notifications.forEach((notif) => {
+		if (notif && notif.type === 'reaction' && typeof notif.bodyShort === 'string') {
+			try {
+				notif.bodyShort = notif.bodyShort.replace(/:([a-z0-9_+-]+):/gi, (whole, name) => {
+					const html = parse(name.toLowerCase());
+					return html || whole;
+				});
+			} catch (e) {
+				console.error(e);
+			}
+		}
+	});
 	return data;
 };
 
@@ -409,7 +439,11 @@ async function giveOwnerReactionReputation(reactionReputation, pid) {
 
 // When a user takes back a reaction, the notification that was sent to the author is deleted too.
 // Failing to delete it must never make removing the reaction itself fail.
-async function rescindReactionNotification(nid) {
+// A reaction that gives reputation (a "like") follows its own setting, every other reaction the general one.
+async function rescindReactionNotification(nid, enabled = true) {
+	if (!enabled) {
+		return;
+	}
 	try {
 		await notifications.rescind(nid);
 	} catch (e) {
@@ -561,7 +595,10 @@ SocketPlugins.reactions = {
 
 		if (hasReacted) {
 			await db.setRemove(`pid:${data.pid}:reaction:${data.reaction}`, socket.uid);
-			await rescindReactionNotification(`uid:${socket.uid}:pid:${data.pid}:reaction:${data.reaction}`);
+			await rescindReactionNotification(
+				`uid:${socket.uid}:pid:${data.pid}:reaction:${data.reaction}`,
+				reactionReputation > 0 ? settings.deleteNotificationOnRemoveReputation : settings.deleteNotificationOnRemove
+			);
 		}
 
 		const reactionCount = await db.setCount(`pid:${data.pid}:reaction:${data.reaction}`);
@@ -681,7 +718,10 @@ SocketPlugins.reactions = {
 		data.roomId = roomId;
 		if (hasReacted) {
 			await db.setRemove(`mid:${data.mid}:reaction:${data.reaction}`, socket.uid);
-			await rescindReactionNotification(`uid:${socket.uid}:mid:${data.mid}:reaction:${data.reaction}`);
+			await rescindReactionNotification(
+				`uid:${socket.uid}:mid:${data.mid}:reaction:${data.reaction}`,
+				settings.deleteNotificationOnRemove
+			);
 		}
 
 		const reactionCount = await db.setCount(`mid:${data.mid}:reaction:${data.reaction}`);
