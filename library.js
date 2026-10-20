@@ -38,6 +38,12 @@ function parse(name) {
 	return emoji ? emojiParser.buildEmoji(emoji, '') : '';
 }
 
+async function requireAdmin(socket) {
+	if (!socket.uid || !(await user.isAdministrator(socket.uid))) {
+		throw new Error('[[error:no-privileges]]');
+	}
+}
+
 const ReactionsPlugin = module.exports;
 
 ReactionsPlugin.init = async function (params) {
@@ -491,6 +497,17 @@ async function getReactionSetKey(socket, data) {
 }
 
 SocketPlugins.reactions = {
+	// Setting for NodeBB's built-in upvote, shown on the core page "Settings > Reputation" (see public/acp-reputation.js).
+	getUnvoteSetting: async function (socket) {
+		await requireAdmin(socket);
+		const settings = await loadPluginConfig();
+		return { enabled: settings.deleteNotificationOnUnvote };
+	},
+	setUnvoteSetting: async function (socket, data) {
+		await requireAdmin(socket);
+		await meta.settings.setOne('reactions', 'deleteNotificationOnUnvote', data && data.enabled ? 'on' : 'off');
+		return { enabled: !!(data && data.enabled) };
+	},
 	addPostReaction: async function (socket, data) {
 		if (!socket.uid) {
 			throw new Error('[[error:not-logged-in]]');
